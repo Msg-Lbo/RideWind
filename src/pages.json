@@ -1,0 +1,70 @@
+{
+  "pages": [
+    {
+      "path": "pages/curve/index",
+      "style": {
+        "navigationBarTitleText": "油耗曲线",
+        "navigationBarBackgroundColor": "#E9FDF7",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "油耗记录",
+        "navigationBarBackgroundColor": "#E9FDF7",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/records/index",
+      "style": {
+        "navigationBarTitleText": "记录列表",
+        "navigationBarBackgroundColor": "#E9FDF7",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/vehicle/index",
+      "style": {
+        "navigationBarTitleText": "我的爱车",
+        "navigationBarBackgroundColor": "#E9FDF7",
+        "navigationBarTextStyle": "black"
+      }
+    }
+  ],
+  "tabBar": {
+    "color": "#6f8086",
+    "selectedColor": "#14B8A6",
+    "backgroundColor": "#E9FDF7",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/curve/index",
+        "text": "油耗曲线",
+        "iconPath": "static/icons/curve.png",
+        "selectedIconPath": "static/icons/curve-active.png"
+      },
+      {
+        "pagePath": "pages/index/index",
+        "text": "油耗记录",
+        "iconPath": "static/icons/record.png",
+        "selectedIconPath": "static/icons/record-active.png"
+      },
+      {
+        "pagePath": "pages/vehicle/index",
+        "text": "我的爱车",
+        "iconPath": "static/icons/bike.png",
+        "selectedIconPath": "static/icons/bike-active.png"
+      }
+    ]
+  },
+  "globalStyle": {
+    "backgroundColor": "#E9FDF7",
+    "backgroundTextStyle": "light",
+    "navigationStyle": "custom",
+    "navigationBarBackgroundColor": "#E9FDF7",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "油耗记录"
+  }
+}

@@ -1,0 +1,36 @@
+$font-title: "LXGW WenKai Screen", "Noto Serif SC", "STKaiti", serif;
+$font-body: "HarmonyOS Sans", "Source Han Sans SC", "PingFang SC", sans-serif;
+
+:root,
+page {
+  --font-title: #{$font-title};
+  --font-body: #{$font-body};
+  --ink: #1a2b2f;
+  --ink-soft: #4a5f65;
+  --ink-muted: #6f8086;
+  --card-bg: rgba(255, 255, 255, 0.9);
+  --card-border: rgba(16, 60, 66, 0.08);
+  --accent: #14b8a6;
+  --accent-2: #ff7a59;
+  --accent-soft: rgba(20, 184, 166, 0.16);
+  --line: rgba(16, 60, 66, 0.12);
+  --shadow: 0 20rpx 60rpx rgba(10, 82, 78, 0.12);
+}
+
+page {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: linear-gradient(160deg, #e9fdf7 0%, #fff1e7 48%, #eaf4ff 100%);
+}
+
+view,
+text,
+input,
+button {
+  box-sizing: border-box;
+}
+
+button {
+  border-radius: 999rpx;
+  border: none;
+}
