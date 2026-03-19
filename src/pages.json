@@ -1,7 +1,7 @@
 {
   "pages": [
     {
-      "path": "pages/curve/index",
+      "path": "pkg-curve/index",
       "style": {
         "navigationBarTitleText": "油耗曲线",
         "navigationBarBackgroundColor": "#E9FDF7",
@@ -9,53 +9,100 @@
       }
     },
     {
-      "path": "pages/index/index",
+      "path": "pkg-records/index",
       "style": {
-        "navigationBarTitleText": "油耗记录",
+        "navigationBarTitleText": "列表",
         "navigationBarBackgroundColor": "#E9FDF7",
         "navigationBarTextStyle": "black"
       }
     },
     {
-      "path": "pages/records/index",
+      "path": "pkg-refuel/index",
       "style": {
-        "navigationBarTitleText": "记录列表",
+        "navigationBarTitleText": "加油",
         "navigationBarBackgroundColor": "#E9FDF7",
         "navigationBarTextStyle": "black"
       }
     },
     {
-      "path": "pages/vehicle/index",
+      "path": "pkg-maintenance/index",
       "style": {
-        "navigationBarTitleText": "我的爱车",
+        "navigationBarTitleText": "保养记录",
+        "navigationBarBackgroundColor": "#E9FDF7",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pkg-mine/index",
+      "style": {
+        "navigationBarTitleText": "我的",
         "navigationBarBackgroundColor": "#E9FDF7",
         "navigationBarTextStyle": "black"
       }
     }
   ],
+  "subPackages": [
+    {
+      "root": "subpkg-action",
+      "pages": [
+        {
+          "path": "create/index",
+          "style": {
+            "navigationBarTitleText": "新增记录",
+            "navigationBarBackgroundColor": "#E9FDF7",
+            "navigationBarTextStyle": "black"
+          }
+        }
+      ]
+    },
+    {
+      "root": "subpkg-mine",
+      "pages": [
+        {
+          "path": "about/index",
+          "style": {
+            "navigationBarTitleText": "关于",
+            "navigationBarBackgroundColor": "#E9FDF7",
+            "navigationBarTextStyle": "black"
+          }
+        },
+        {
+          "path": "vehicle/index",
+          "style": {
+            "navigationBarTitleText": "我的爱车",
+            "navigationBarBackgroundColor": "#E9FDF7",
+            "navigationBarTextStyle": "black"
+          }
+        }
+      ]
+    }
+  ],
   "tabBar": {
+    "custom": true,
     "color": "#6f8086",
     "selectedColor": "#14B8A6",
-    "backgroundColor": "#E9FDF7",
+    "backgroundColor": "#F3F5F6",
     "borderStyle": "white",
     "list": [
       {
-        "pagePath": "pages/curve/index",
-        "text": "油耗曲线",
-        "iconPath": "static/icons/curve.png",
-        "selectedIconPath": "static/icons/curve-active.png"
+        "pagePath": "pkg-curve/index",
+        "text": "油耗曲线"
       },
       {
-        "pagePath": "pages/index/index",
-        "text": "油耗记录",
-        "iconPath": "static/icons/record.png",
-        "selectedIconPath": "static/icons/record-active.png"
+        "pagePath": "pkg-records/index",
+        "text": "列表"
       },
       {
-        "pagePath": "pages/vehicle/index",
-        "text": "我的爱车",
-        "iconPath": "static/icons/bike.png",
-        "selectedIconPath": "static/icons/bike-active.png"
+        "pagePath": "pkg-refuel/index",
+        "text": "加油"
+      },
+      {
+        "pagePath": "pkg-maintenance/index",
+        "text": "保养记录"
+      },
+      {
+        "pagePath": "pkg-mine/index",
+        "text": "我的"
       }
     ]
   },

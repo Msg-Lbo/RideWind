@@ -10,18 +10,18 @@
         <view v-if="canGoBack" class="nav-back" @tap="goBack">
           <uni-icons type="back" size="28" color="#1e6a5a"></uni-icons>
         </view>
-        <text class="nav-title">{{ title }}</text>
+        <text class="nav-title">{{ props.title }}</text>
       </view>
     </view>
     <view class="bg-orb orb-1"></view>
     <view class="bg-orb orb-2"></view>
     <view class="bg-orb orb-3"></view>
 
-    <view v-if="title || subtitle || (pills && pills.length)" class="hero">
-      <text v-if="title" class="hero-title">{{ title }}</text>
-      <text v-if="subtitle" class="hero-sub">{{ subtitle }}</text>
-      <view v-if="pills && pills.length" class="hero-pills">
-        <view v-for="pill in pills" :key="pill.label" class="pill">
+    <view v-if="props.showHero && hasHeroContent" class="hero">
+      <text v-if="props.title" class="hero-title">{{ props.title }}</text>
+      <text v-if="props.subtitle" class="hero-sub">{{ props.subtitle }}</text>
+      <view v-if="props.pills.length" class="hero-pills">
+        <view v-for="pill in props.pills" :key="pill.label" class="pill">
           <text class="pill-label">{{ pill.label }}</text>
           <text class="pill-value">{{ pill.value }}</text>
         </view>
@@ -41,7 +41,16 @@ type Pill = {
   value: string;
 };
 
-defineProps<{ title?: string; subtitle?: string; pills?: Pill[] }>();
+const props = withDefaults(
+  defineProps<{ title?: string; subtitle?: string; pills?: Pill[]; showHero?: boolean }>(),
+  {
+    title: "",
+    subtitle: "",
+    pills: () => [],
+    showHero: true,
+  }
+);
+const hasHeroContent = computed(() => !!(props.title || props.subtitle || props.pills.length));
 
 const statusBarHeight = ref(0);
 const navBarHeight = ref(44);
@@ -70,7 +79,42 @@ const updateNavMetrics = () => {
   navSidePadding.value = 16;
 };
 
-const TAB_PAGES = ["pages/curve/index", "pages/index/index", "pages/vehicle/index"];
+const TAB_PAGES = [
+  "pkg-curve/index",
+  "pkg-records/index",
+  "pkg-refuel/index",
+  "pkg-maintenance/index",
+  "pkg-mine/index",
+];
+const TAB_PAGE_PATHS = TAB_PAGES.map((path) => `/${path}`);
+
+const syncCustomTabbar = () => {
+  const pages = getCurrentPages() as Array<{ route?: string; getTabBar?: () => any }>;
+  if (!pages.length) {
+    return;
+  }
+  const current = pages[pages.length - 1];
+  const route = `/${(current.route || "").replace(/^\//, "")}`;
+  const tabIndex = TAB_PAGE_PATHS.indexOf(route);
+  if (tabIndex < 0 || typeof current.getTabBar !== "function") {
+    return;
+  }
+  const tabBar = current.getTabBar();
+  if (!tabBar) {
+    return;
+  }
+  if (typeof tabBar.updateSelectedByPath === "function") {
+    tabBar.updateSelectedByPath(route);
+    return;
+  }
+  if (typeof tabBar.setData !== "function") {
+    return;
+  }
+  const selected = typeof tabBar.data?.selected === "number" ? tabBar.data.selected : -1;
+  if (selected !== tabIndex) {
+    tabBar.setData({ selected: tabIndex });
+  }
+};
 
 const updateCanGoBack = () => {
   const pages = getCurrentPages();
@@ -85,13 +129,13 @@ const updateCanGoBack = () => {
 
 const goBack = () => {
   if (!canGoBack.value) {
-    uni.switchTab({ url: "/pages/index/index" });
+    uni.switchTab({ url: "/pkg-curve/index" });
     return;
   }
   uni.navigateBack({
     delta: 1,
     fail: () => {
-      uni.switchTab({ url: "/pages/index/index" });
+      uni.switchTab({ url: "/pkg-curve/index" });
     },
   });
 };
@@ -99,10 +143,14 @@ const goBack = () => {
 onMounted(() => {
   updateNavMetrics();
   updateCanGoBack();
+  syncCustomTabbar();
+  setTimeout(syncCustomTabbar, 16);
 });
 
 onShow(() => {
   updateCanGoBack();
+  syncCustomTabbar();
+  setTimeout(syncCustomTabbar, 16);
 });
 
 onPageScroll((event) => {
@@ -113,9 +161,14 @@ onPageScroll((event) => {
 <style lang="scss" scoped>
 .page {
   min-height: 100vh;
-  padding: calc(var(--nav-height, 0px) + 36rpx) 24rpx 0;
+  padding: calc(var(--nav-height, 0px) + 36rpx) 24rpx calc(152rpx + constant(safe-area-inset-bottom));
+  padding: calc(var(--nav-height, 0px) + 36rpx) 24rpx calc(152rpx + env(safe-area-inset-bottom));
   position: relative;
   overflow: hidden;
+
+  :deep(.card:last-child) {
+    margin-bottom: 0;
+  }
 
   .page-nav {
     position: fixed;

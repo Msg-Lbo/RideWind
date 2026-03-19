@@ -12,7 +12,7 @@
     "dev:mp-lark": "uni -p mp-lark",
     "dev:mp-qq": "uni -p mp-qq",
     "dev:mp-toutiao": "uni -p mp-toutiao",
-    "dev:mp-harmony": "uni -p mp-harmony",
+    "dev:mp-harmony": "uni -p mp-harmony", 
     "dev:mp-weixin": "uni -p mp-weixin",
     "dev:mp-xhs": "uni -p mp-xhs",
     "dev:quickapp-webview": "uni -p quickapp-webview",
@@ -55,6 +55,7 @@
     "@dcloudio/uni-quickapp-webview": "3.0.0-4080420251103001",
     "echarts": "^6.0.0",
     "tslib": "^2.8.1",
+    "uview-plus": "^3.7.13",
     "vue": "^3.4.21",
     "vue-i18n": "^9.1.9",
     "zrender": "^6.0.0"

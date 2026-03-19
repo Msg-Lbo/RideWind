@@ -18,14 +18,6 @@
       </template>
     </app-card>
 
-    <app-card title="车辆概览" desc="基于当前信息与历史记录">
-      <app-metric-grid :items="summaryItems" />
-    </app-card>
-
-    <app-card title="最近一次记录" desc="快速回看最近的油耗数据">
-      <app-empty v-if="!latestRecord" text="还没有记录，先去添加一次加油。" />
-      <app-metric-grid v-else :items="latestItems" />
-    </app-card>
   </app-page>
 </template>
 
@@ -35,19 +27,13 @@ import AppPage from "@/components/AppPage.vue";
 import AppCard from "@/components/AppCard.vue";
 import AppField from "@/components/AppField.vue";
 import AppButton from "@/components/AppButton.vue";
-import AppMetricGrid from "@/components/AppMetricGrid.vue";
-import AppEmpty from "@/components/AppEmpty.vue";
 import { useMotoStore } from "@/composables/useMotoStore";
 
 const {
   vehicleForm,
-  stats,
-  latestRecord,
   vehicleDisplayName,
   tankCapacityDisplay,
   displacementDisplay,
-  formatValue,
-  toNumber,
   saveVehicle,
   resetVehicle,
 } = useMotoStore();
@@ -57,44 +43,6 @@ const heroPills = computed(() => [
   { label: "油箱", value: tankCapacityDisplay.value },
   { label: "排量", value: displacementDisplay.value },
 ]);
-
-const formatWithUnit = (value: number, unit: string, digits = 2) => {
-  const formatted = formatValue(value, digits);
-  return formatted === "--" ? "--" : `${formatted} ${unit}`;
-};
-
-const avgRange = computed(() => {
-  const tankCapacity = toNumber(vehicleForm.tankCapacity);
-  const avgConsumption = stats.value.avgConsumption;
-  return tankCapacity > 0 && avgConsumption > 0 ? (tankCapacity * 100) / avgConsumption : 0;
-});
-
-const summaryItems = computed(() => [
-  { label: "爱车名字", value: vehicleDisplayName.value },
-  { label: "油箱容量", value: tankCapacityDisplay.value },
-  { label: "排量", value: displacementDisplay.value },
-  {
-    label: "平均油耗",
-    value: stats.value.hasData ? formatWithUnit(stats.value.avgConsumption, "L/100km") : "--",
-  },
-  {
-    label: "平均续航",
-    value: avgRange.value > 0 ? formatWithUnit(avgRange.value, "km", 0) : "--",
-  },
-]);
-
-const latestItems = computed(() => {
-  if (!latestRecord.value) {
-    return [];
-  }
-
-  return [
-    { label: "加油量", value: formatWithUnit(latestRecord.value.fuelAmount, "L") },
-    { label: "小计里程", value: formatWithUnit(latestRecord.value.distance, "km", 0) },
-    { label: "油耗", value: formatWithUnit(latestRecord.value.consumption, "L/100km") },
-    { label: "油费", value: formatWithUnit(latestRecord.value.costPer100, "元/100km") },
-  ];
-});
 </script>
 
 <style lang="scss" scoped>

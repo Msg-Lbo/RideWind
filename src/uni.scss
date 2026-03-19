@@ -1,6 +1,8 @@
 $font-title: "LXGW WenKai Screen", "Noto Serif SC", "STKaiti", serif;
 $font-body: "HarmonyOS Sans", "Source Han Sans SC", "PingFang SC", sans-serif;
 
+@import "uview-plus/theme.scss";
+
 :root,
 page {
   --font-title: #{$font-title};
