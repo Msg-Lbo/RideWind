@@ -11,9 +11,12 @@
           <view class="record-mark"></view>
           <text class="record-day">{{ formatShortDate(record.timestamp) }}</text>
         </view>
+        <view class="record-consumption">
+          <text class="record-consumption-value">{{ formatConsumption(record) }}</text>
+        </view>
         <view class="record-mile">
-          <text class="record-mile-value">{{ formatValue(record.mileage, 1) }}</text>
-          <text v-if="formatValue(record.mileage, 1) !== '--'" class="record-mile-unit">公里</text>
+          <text class="record-mile-value">{{ formatDistance(record) }}</text>
+          <text v-if="formatDistance(record) !== '--'" class="record-mile-unit">公里</text>
           <uni-icons
             :type="isExpanded(record.id) ? 'arrow-down' : 'arrow-right'"
             size="16"
@@ -49,33 +52,105 @@
 import { reactive } from "vue";
 import type { RecordItem } from "@/composables/useMotoStore";
 
+/**
+ * 列表组件入参。
+ *
+ * - records: 待展示的记录数组
+ * - formatValue: 父组件提供的数值格式化函数
+ */
 const props = defineProps<{
   records: RecordItem[];
   formatValue: (value: number, digits?: number) => string;
 }>();
 
+/**
+ * 组件事件。
+ * `edit`：通知父组件编辑指定记录。
+ */
 defineEmits<{ (e: "edit", record: RecordItem): void }>();
 
+/** 记录展开状态映射表，key 为记录 id。 */
 const expandedMap = reactive<Record<string, boolean>>({});
 
+/**
+ * 判断记录是否展开。
+ *
+ * @param id 记录 ID
+ * @returns 是否展开
+ */
 const isExpanded = (id: string) => !!expandedMap[id];
 
+/**
+ * 切换记录展开状态。
+ *
+ * @param id 记录 ID
+ */
 const toggle = (id: string) => {
   expandedMap[id] = !expandedMap[id];
 };
 
+/**
+ * 数字补零到两位。
+ *
+ * @param value 原始数字
+ * @returns 两位字符串
+ */
 const padNumber = (value: number) => `${value}`.padStart(2, "0");
 
+/**
+ * 格式化短日期（MM/DD）。
+ *
+ * @param timestamp 时间戳
+ * @returns 日期文本
+ */
 const formatShortDate = (timestamp: number) => {
   const d = new Date(timestamp);
   return `${padNumber(d.getMonth() + 1)}/${padNumber(d.getDate())}`;
 };
 
+/**
+ * 拼接单位展示。
+ *
+ * @param value 原始值
+ * @param unit 单位
+ * @param digits 小数位
+ * @returns 展示字符串
+ */
 const formatWithUnit = (value: number, unit: string, digits = 2) => {
   const formatted = props.formatValue(value, digits);
   return formatted === "--" ? "--" : `${formatted}${unit}`;
 };
 
+/**
+ * 统一显示里程字段。
+ * 优先使用 `distance`（本次里程），缺失时回退到 `mileage`。
+ *
+ * @param record 记录对象
+ * @returns 展示用里程文本
+ */
+const formatDistance = (record: RecordItem) => {
+  const distance = record.distance > 0 ? record.distance : record.mileage;
+  return props.formatValue(distance, 1);
+};
+
+/**
+ * 展示对应记录的百公里油耗。
+ *
+ * @param record 记录对象
+ * @returns 油耗文本，例如 `5.96L/100km`
+ */
+const formatConsumption = (record: RecordItem) => {
+  return formatWithUnit(record.consumption, "L/100km");
+};
+
+/**
+ * 带正号的单位展示（例如 +5.96升）。
+ *
+ * @param value 原始值
+ * @param unit 单位
+ * @param digits 小数位
+ * @returns 展示字符串
+ */
 const formatSignedWithUnit = (value: number, unit: string, digits = 2) => {
   const formatted = props.formatValue(value, digits);
   return formatted === "--" ? "--" : `+${formatted}${unit}`;
@@ -98,10 +173,26 @@ const formatSignedWithUnit = (value: number, unit: string, digits = 2) => {
 }
 
 .record-head {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
   gap: 12rpx;
+}
+
+.record-consumption {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.record-consumption-value {
+  max-width: 100%;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .record-date {

@@ -38,7 +38,7 @@
         </picker>
         <view class="form-row">
           <view class="row-label row-label-flex">
-            <text>当前里程</text>
+            <text>本次里程</text>
             <view class="help-icon" @tap.stop="showMileageHelp">
               <uni-icons type="help" size="14" color="#8aa2a8"></uni-icons>
             </view>
@@ -49,7 +49,7 @@
               v-model="recordForm.mileage"
               class="row-input"
               type="digit"
-              placeholder="例如：12034.6"
+              placeholder="例如：100"
             />
             <text class="row-unit">公里</text>
           </view>
@@ -172,6 +172,12 @@ const {
   resetRecord,
 } = useMotoStore();
 
+/**
+ * 将占位值 `--` 清理为空字符串，避免带入输入框参与计算。
+ *
+ * @param value 原始表单值
+ * @returns 可用于输入框的安全字符串
+ */
 const sanitizeField = (value: string) => (value === "--" ? "" : value);
 recordForm.displayUnitPrice = sanitizeField(recordForm.displayUnitPrice);
 recordForm.fuelAmount = sanitizeField(recordForm.fuelAmount);
@@ -180,23 +186,46 @@ recordForm.actualUnitPrice = sanitizeField(recordForm.actualUnitPrice);
 recordForm.discountAmount = sanitizeField(recordForm.discountAmount);
 recordForm.actualAmount = sanitizeField(recordForm.actualAmount);
 
-const onDateChange = (event: { detail: { value: string } }) => {
+/** 日期/时间选择器 change 事件结构。 */
+type DateTimePickerChangeEvent = {
+  detail: {
+    /** 选中的字符串值，例如 `2026-03-21` 或 `17:19` */
+    value: string;
+  };
+};
+
+/**
+ * 处理日期选择。
+ *
+ * @param event 日期选择器事件
+ */
+const onDateChange = (event: DateTimePickerChangeEvent) => {
   recordForm.date = event.detail.value;
 };
 
-const onTimeChange = (event: { detail: { value: string } }) => {
+/**
+ * 处理时间选择。
+ *
+ * @param event 时间选择器事件
+ */
+const onTimeChange = (event: DateTimePickerChangeEvent) => {
   recordForm.time = event.detail.value;
 };
 
+/** 弹出“本次里程”说明。 */
 const showMileageHelp = () => {
   uni.showModal({
-    title: "当前里程说明",
+    title: "本次里程说明",
     content:
-      "填写本次加油时的仪表盘总里程，用于自动计算小计里程。若没有历史记录，将按填写值作为小计里程。建议按时间顺序录入。",
+      "填写这一箱油实际骑行的公里数。比如骑到 100 公里就加油，这里填 100。系统会按“加油量 ÷ 本次里程 × 100”计算油耗。",
     showCancel: false,
   });
 };
 
+/**
+ * 提交保存。
+ * 先对顶部/底部联动字段做同步与归一化，再调用 store 保存。
+ */
 const handleSave = () => {
   if (topEditedField.value) {
     syncTopByEditedField(topEditedField.value);
@@ -209,6 +238,7 @@ const handleSave = () => {
       bottomEditedField.value = "";
     }
   }
+  normalizeCalcFields();
   const wasEditing = isEditing.value;
   const saved = addRecord();
   if (saved) {
@@ -219,6 +249,7 @@ const handleSave = () => {
   }
 };
 
+/** 重置当前录入表单。 */
 const handleReset = () => {
   resetRecord();
   resetSyncSource();
@@ -236,20 +267,34 @@ const dateDisplay = computed(() =>
 
 const primaryActionText = computed(() => (isEditing.value ? "保存修改" : "保存本次记录"));
 
+/**
+ * 输入事件兼容结构。
+ * 不同平台下输入值可能出现在 `detail/target/currentTarget` 任一位置。
+ */
 type InputEventPayload = {
+  /** uni-input 常见位置 */
   detail?: {
     value?: string | number;
   } | number;
+  /** H5/部分端可能挂在 target */
   target?: {
     value?: string | number;
   } | EventTarget | null;
+  /** 兜底位置 */
   currentTarget?: {
     value?: string | number;
   } | EventTarget | null;
 };
 
+/** 统一输入事件类型。 */
 type InputEventLike = InputEvent | InputEventPayload;
 
+/**
+ * 从多端输入事件里提取文本值。
+ *
+ * @param event 输入事件
+ * @returns 输入框值，提取失败返回空字符串
+ */
 const readInput = (event: InputEventLike) => {
   const detail = (event as InputEventPayload).detail;
   if (detail && typeof detail === "object" && "value" in detail) {
@@ -271,10 +316,40 @@ const readInput = (event: InputEventLike) => {
 
   return "";
 };
+
+/**
+ * 清洗小数字符串并限制小数位。
+ *
+ * @param raw 原始输入
+ * @param maxDigits 最大小数位，默认 2
+ * @returns 规范化后的可编辑字符串
+ */
+const sanitizeDecimalInput = (raw: string, maxDigits = 2) => {
+  const cleaned = raw.replace(/[^\d.]/g, "");
+  if (!cleaned) {
+    return "";
+  }
+  const firstDotIndex = cleaned.indexOf(".");
+  if (firstDotIndex < 0) {
+    return cleaned;
+  }
+
+  const integerPart = cleaned.slice(0, firstDotIndex) || "0";
+  const decimalPart = cleaned.slice(firstDotIndex + 1).replace(/\./g, "").slice(0, maxDigits);
+  if (cleaned.endsWith(".") && !decimalPart) {
+    return `${integerPart}.`;
+  }
+  return `${integerPart}.${decimalPart}`;
+};
+
+/** 顶部三格（机显单价/加油量/机显金额）最后一次编辑来源。 */
 const topEditedField = ref<"unit" | "fuel" | "display" | "">("");
+/** 底部三格（实付单价/优惠金额/实付金额）当前编辑来源。 */
 const bottomEditedField = ref<"unit" | "discount" | "actual" | "">("");
+/** 底部三格上一次有效来源，用于跨字段联动时保持计算方向。 */
 const bottomAnchorField = ref<"unit" | "discount" | "actual" | "">("");
 
+/** 清空联动来源状态。 */
 const resetSyncSource = () => {
   topEditedField.value = "";
   bottomEditedField.value = "";
@@ -285,11 +360,23 @@ onShow(() => {
   resetSyncSource();
 });
 
+/**
+ * 解析输入字段，返回“是否有输入”与数值。
+ *
+ * @param raw 原始字符串
+ * @returns 解析结果
+ */
 const parseField = (raw: string) => ({
   has: raw.trim() !== "",
   value: Number.isFinite(Number.parseFloat(raw)) ? Number.parseFloat(raw) : 0,
 });
 
+/**
+ * 数字格式化为两位小数字符串。
+ *
+ * @param value 原始数字
+ * @returns 两位小数字符串
+ */
 const formatNum = (value: number) => {
   if (!Number.isFinite(value) || value < 0) {
     return "0.00";
@@ -297,6 +384,42 @@ const formatNum = (value: number) => {
   return value.toFixed(2);
 };
 
+/**
+ * 归一化单个小数字段。
+ *
+ * @param raw 原始输入
+ * @param allowZero 是否允许 0.00
+ * @returns 归一化后的字段值
+ */
+const normalizeDecimalField = (raw: string, allowZero = true) => {
+  const { has, value } = parseField(raw);
+  if (!has) {
+    return "";
+  }
+  if (value < 0) {
+    return "";
+  }
+  if (!allowZero && value === 0) {
+    return "";
+  }
+  return formatNum(value);
+};
+
+/** 将六个金额/单价字段统一归一化为两位小数。 */
+const normalizeCalcFields = () => {
+  recordForm.displayUnitPrice = normalizeDecimalField(recordForm.displayUnitPrice, false);
+  recordForm.fuelAmount = normalizeDecimalField(recordForm.fuelAmount, false);
+  recordForm.displayAmount = normalizeDecimalField(recordForm.displayAmount, false);
+  recordForm.actualUnitPrice = normalizeDecimalField(recordForm.actualUnitPrice, false);
+  recordForm.discountAmount = normalizeDecimalField(recordForm.discountAmount, true);
+  recordForm.actualAmount = normalizeDecimalField(recordForm.actualAmount, false);
+};
+
+/**
+ * 根据顶部最后编辑字段执行联动。
+ *
+ * @param edited 顶部来源：机显单价 / 加油量 / 机显金额
+ */
 const syncTopByEditedField = (edited: "unit" | "fuel" | "display") => {
   const unit = parseField(recordForm.displayUnitPrice);
   const fuel = parseField(recordForm.fuelAmount);
@@ -354,6 +477,11 @@ const syncTopByEditedField = (edited: "unit" | "fuel" | "display") => {
   }
 };
 
+/**
+ * 根据底部最后编辑字段执行联动。
+ *
+ * @param edited 底部来源：实付单价 / 优惠金额 / 实付金额
+ */
 const syncBottomByField = (edited: "unit" | "discount" | "actual") => {
   const setUnitByActual = () => {
     const actual = parseField(recordForm.actualAmount);
@@ -414,21 +542,37 @@ const syncBottomByField = (edited: "unit" | "discount" | "actual") => {
   }
 };
 
+/**
+ * 顶部-机显单价输入。
+ *
+ * @param event 输入事件
+ */
 const onDisplayUnitPriceInput = (event: InputEventLike) => {
-  recordForm.displayUnitPrice = sanitizeField(readInput(event));
+  recordForm.displayUnitPrice = sanitizeField(sanitizeDecimalInput(readInput(event)));
   topEditedField.value = "unit";
 };
 
+/**
+ * 顶部-加油量输入。
+ *
+ * @param event 输入事件
+ */
 const onFuelAmountInput = (event: InputEventLike) => {
-  recordForm.fuelAmount = sanitizeField(readInput(event));
+  recordForm.fuelAmount = sanitizeField(sanitizeDecimalInput(readInput(event)));
   topEditedField.value = "fuel";
 };
 
+/**
+ * 顶部-机显金额输入。
+ *
+ * @param event 输入事件
+ */
 const onDisplayAmountInput = (event: InputEventLike) => {
-  recordForm.displayAmount = sanitizeField(readInput(event));
+  recordForm.displayAmount = sanitizeField(sanitizeDecimalInput(readInput(event)));
   topEditedField.value = "display";
 };
 
+/** 顶部字段失焦后执行联动并归一化。 */
 const onTopFieldBlur = () => {
   if (!topEditedField.value) {
     return;
@@ -443,23 +587,40 @@ const onTopFieldBlur = () => {
       bottomEditedField.value = "";
     }
   }
+  normalizeCalcFields();
 };
 
+/**
+ * 底部-实付单价输入。
+ *
+ * @param event 输入事件
+ */
 const onActualUnitPriceInput = (event: InputEventLike) => {
-  recordForm.actualUnitPrice = sanitizeField(readInput(event));
+  recordForm.actualUnitPrice = sanitizeField(sanitizeDecimalInput(readInput(event)));
   bottomEditedField.value = "unit";
 };
 
+/**
+ * 底部-优惠金额输入。
+ *
+ * @param event 输入事件
+ */
 const onDiscountAmountInput = (event: InputEventLike) => {
-  recordForm.discountAmount = sanitizeField(readInput(event));
+  recordForm.discountAmount = sanitizeField(sanitizeDecimalInput(readInput(event)));
   bottomEditedField.value = "discount";
 };
 
+/**
+ * 底部-实付金额输入。
+ *
+ * @param event 输入事件
+ */
 const onActualAmountInput = (event: InputEventLike) => {
-  recordForm.actualAmount = sanitizeField(readInput(event));
+  recordForm.actualAmount = sanitizeField(sanitizeDecimalInput(readInput(event)));
   bottomEditedField.value = "actual";
 };
 
+/** 底部字段失焦后执行联动并归一化。 */
 const onBottomFieldBlur = () => {
   const bottomTarget = bottomEditedField.value || bottomAnchorField.value;
   if (!bottomTarget) {
@@ -470,13 +631,23 @@ const onBottomFieldBlur = () => {
     bottomAnchorField.value = bottomEditedField.value;
   }
   bottomEditedField.value = "";
+  normalizeCalcFields();
 };
 
+/**
+ * 统一拼接数值+单位。
+ *
+ * @param value 原始数字
+ * @param unit 单位文本
+ * @param digits 小数位
+ * @returns 用于 UI 展示的字符串
+ */
 const formatWithUnit = (value: number, unit: string, digits = 2) => {
   const formatted = formatValue(value, digits);
   return formatted === "--" ? "--" : `${formatted} ${unit}`;
 };
 
+/** 录入页底部四宫格预览数据。 */
 const previewItems = computed(() => [
   {
     label: "油耗",

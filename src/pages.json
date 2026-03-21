@@ -75,6 +75,19 @@
           }
         }
       ]
+    },
+    {
+      "root": "subpkg-maintenance",
+      "pages": [
+        {
+          "path": "create/index",
+          "style": {
+            "navigationBarTitleText": "新增保养记录",
+            "navigationBarBackgroundColor": "#E9FDF7",
+            "navigationBarTextStyle": "black"
+          }
+        }
+      ]
     }
   ],
   "tabBar": {

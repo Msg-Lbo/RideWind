@@ -57,7 +57,11 @@ const formatShortDate = (timestamp: number) => {
   return `${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 };
 
-const buildAxisRange = (values: number[], fallback: { min: number; max: number }) => {
+const buildAxisRange = (
+  values: number[],
+  fallback: { min: number; max: number },
+  paddingRate = 0.28
+) => {
   if (!values.length) {
     return fallback;
   }
@@ -65,7 +69,7 @@ const buildAxisRange = (values: number[], fallback: { min: number; max: number }
   const rawMax = Math.max(...values);
   const span = rawMax - rawMin;
   const baseSpan = span > 0 ? span : Math.max(rawMax * 0.2, 1);
-  const padding = baseSpan * 0.28;
+  const padding = baseSpan * paddingRate;
   const min = Math.max(0, rawMin - padding);
   const max = rawMax + padding;
   return {
@@ -88,20 +92,22 @@ const chartOption = computed(() => {
   }
 
   const ordered = [...records.value].sort((a, b) => a.timestamp - b.timestamp);
+  const showSymbol = ordered.length <= 8;
   const labels = ordered.map((item) => formatShortDate(item.timestamp));
   const consumption = ordered.map((item) => Number(item.consumption.toFixed(2)));
   const costPer100 = ordered.map((item) => Number(item.costPer100.toFixed(2)));
-  const consumptionRange = buildAxisRange(consumption, { min: 0, max: 10 });
-  const costRange = buildAxisRange(costPer100, { min: 0, max: 80 });
+  const consumptionRange = buildAxisRange(consumption, { min: 0, max: 10 }, 0.24);
+  const costRange = buildAxisRange(costPer100, { min: 0, max: 80 }, 0.42);
 
   return {
     backgroundColor: "transparent",
-    animationDuration: 820,
-    animationEasing: "cubicOut",
+    animationDuration: 920,
+    animationDurationUpdate: 460,
+    animationEasing: "quarticOut",
     color: ["#10b5a4", "#ff845d"],
     tooltip: {
       trigger: "axis",
-      padding: [10, 12],
+      padding: [11, 13],
       backgroundColor: "rgba(16, 31, 38, 0.9)",
       borderWidth: 1,
       borderColor: "rgba(255, 255, 255, 0.16)",
@@ -110,12 +116,14 @@ const chartOption = computed(() => {
         fontSize: 12,
       },
       axisPointer: {
-        type: "cross",
+        type: "line",
         label: {
           backgroundColor: "rgba(16, 31, 38, 0.95)",
         },
-        crossStyle: {
-          color: "rgba(255, 255, 255, 0.2)",
+        lineStyle: {
+          color: "rgba(16, 60, 66, 0.3)",
+          width: 1.2,
+          type: "dashed",
         },
       },
       formatter: (params: any) => {
@@ -133,9 +141,10 @@ const chartOption = computed(() => {
     legend: {
       data: ["油耗(L/100km)", "油费(元/100km)"],
       top: 2,
-      itemWidth: 18,
+      itemWidth: 20,
       itemHeight: 10,
       itemGap: 22,
+      icon: "circle",
       textStyle: {
         color: "#6f8086",
         fontSize: 12,
@@ -162,6 +171,7 @@ const chartOption = computed(() => {
       axisLabel: {
         color: "#6f8086",
         margin: 10,
+        hideOverlap: true,
       },
     },
     yAxis: [
@@ -207,22 +217,27 @@ const chartOption = computed(() => {
         type: "line",
         yAxisIndex: 0,
         data: consumption,
-        smooth: 0.38,
-        showSymbol: true,
+        smooth: 0.72,
+        smoothMonotone: "x",
+        showSymbol,
         symbol: "circle",
-        symbolSize: 7,
+        symbolSize: 8,
+        z: 3,
         itemStyle: {
           color: "#10b5a4",
           borderWidth: 2,
           borderColor: "#ffffff",
         },
         emphasis: {
+          focus: "series",
           itemStyle: {
             borderWidth: 3,
           },
         },
         lineStyle: {
-          width: 4,
+          width: 5,
+          cap: "round",
+          join: "round",
           shadowColor: "rgba(16, 181, 164, 0.34)",
           shadowBlur: 12,
           shadowOffsetY: 4,
@@ -247,7 +262,8 @@ const chartOption = computed(() => {
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: "rgba(16, 181, 164, 0.35)" },
+              { offset: 0, color: "rgba(16, 181, 164, 0.32)" },
+              { offset: 0.55, color: "rgba(16, 181, 164, 0.14)" },
               { offset: 1, color: "rgba(16, 181, 164, 0.03)" },
             ],
           },
@@ -258,22 +274,29 @@ const chartOption = computed(() => {
         type: "line",
         yAxisIndex: 1,
         data: costPer100,
-        smooth: 0.38,
-        showSymbol: true,
-        symbol: "circle",
-        symbolSize: 7,
+        smooth: 0.72,
+        smoothMonotone: "x",
+        showSymbol,
+        symbol: "diamond",
+        symbolSize: 8,
+        z: 4,
         itemStyle: {
           color: "#ff845d",
           borderWidth: 2,
           borderColor: "#ffffff",
         },
         emphasis: {
+          focus: "series",
           itemStyle: {
             borderWidth: 3,
           },
         },
         lineStyle: {
           width: 4,
+          type: "dashed",
+          cap: "round",
+          join: "round",
+          opacity: 0.96,
           shadowColor: "rgba(255, 132, 93, 0.26)",
           shadowBlur: 10,
           shadowOffsetY: 4,
@@ -289,19 +312,6 @@ const chartOption = computed(() => {
             type: "dashed",
           },
           data: [{ type: "average" }],
-        },
-        areaStyle: {
-          color: {
-            type: "linear",
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              { offset: 0, color: "rgba(255, 132, 93, 0.3)" },
-              { offset: 1, color: "rgba(255, 132, 93, 0.03)" },
-            ],
-          },
         },
       },
     ],

@@ -63,7 +63,16 @@ const goToFuel = () => {
 };
 
 const goToMaintenance = () => {
-  switchToTab("/pkg-maintenance/index");
+  if (isNavigating.value) {
+    return;
+  }
+  isNavigating.value = true;
+  uni.navigateTo({
+    url: "/subpkg-maintenance/create/index",
+    complete: () => {
+      isNavigating.value = false;
+    },
+  });
 };
 
 const handleCancel = () => {
