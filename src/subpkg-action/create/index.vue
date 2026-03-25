@@ -1,5 +1,5 @@
 <template>
-  <app-page title="新增记录" subtitle="选择要添加的记录类型" :show-hero="false">
+  <app-page title="新增记录" subtitle="选择要添加的记录类型" :show-hero="false" back-home>
     <view class="entry-hero">
       <text class="entry-title">新增记录</text>
       <text class="entry-sub">本次是要添加油耗记录，还是保养记录？</text>
@@ -45,6 +45,13 @@ import AppButton from "@/components/AppButton.vue";
 
 const isNavigating = ref(false);
 
+const releaseNavigationLock = (immediate = false) => {
+  const delay = immediate ? 0 : 260;
+  setTimeout(() => {
+    isNavigating.value = false;
+  }, delay);
+};
+
 const switchToTab = (url: string) => {
   if (isNavigating.value) {
     return;
@@ -52,8 +59,11 @@ const switchToTab = (url: string) => {
   isNavigating.value = true;
   uni.switchTab({
     url,
-    complete: () => {
-      isNavigating.value = false;
+    success: () => {
+      releaseNavigationLock();
+    },
+    fail: () => {
+      releaseNavigationLock(true);
     },
   });
 };
@@ -69,82 +79,97 @@ const goToMaintenance = () => {
   isNavigating.value = true;
   uni.navigateTo({
     url: "/subpkg-maintenance/create/index",
-    complete: () => {
-      isNavigating.value = false;
+    success: () => {
+      releaseNavigationLock();
+    },
+    fail: () => {
+      releaseNavigationLock(true);
     },
   });
 };
 
 const handleCancel = () => {
-  if (isNavigating.value) {
-    return;
-  }
-  const pages = getCurrentPages();
-  if (pages.length > 1) {
-    uni.navigateBack({
-      delta: 1,
-      fail: () => {
-        switchToTab("/pkg-curve/index");
-      },
-    });
-    return;
-  }
   switchToTab("/pkg-curve/index");
 };
 </script>
 
 <style lang="scss" scoped>
-.entry-hero {
-  position: relative;
-  z-index: 1;
-  margin-bottom: 28rpx;
+
+.entry {
+  &-hero {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 28rpx;
+  }
+
+  &-title {
+    font-family: var(--font-title);
+    font-size: 42rpx;
+    font-weight: 700;
+    letter-spacing: 2rpx;
+  }
+
+  &-sub {
+    margin-top: 10rpx;
+    font-size: 24rpx;
+    color: var(--ink-soft);
+  }
 }
 
-.entry-title {
-  font-family: var(--font-title);
-  font-size: 42rpx;
-  font-weight: 700;
-  letter-spacing: 2rpx;
-}
+.choice {
+  &-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16rpx;
+  }
 
-.entry-sub {
-  margin-top: 10rpx;
-  font-size: 24rpx;
-  color: var(--ink-soft);
-}
+  &-item {
+    border: 1rpx solid var(--card-border);
+    border-radius: 22rpx;
+    padding: 20rpx 18rpx;
+    background: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    gap: 14rpx;
 
-.choice-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16rpx;
-}
+    &.fuel {
+      box-shadow: 0 14rpx 26rpx rgba(20, 184, 166, 0.14);
+    }
 
-.choice-item {
-  border: 1rpx solid var(--card-border);
-  border-radius: 22rpx;
-  padding: 20rpx 18rpx;
-  background: rgba(255, 255, 255, 0.85);
-  display: flex;
-  align-items: center;
-  gap: 14rpx;
-}
+    &.maintain {
+      box-shadow: 0 14rpx 26rpx rgba(255, 122, 89, 0.12);
+    }
+  }
 
-.choice-item.fuel {
-  box-shadow: 0 14rpx 26rpx rgba(20, 184, 166, 0.14);
-}
+  &-icon {
+    width: 62rpx;
+    height: 62rpx;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
 
-.choice-item.maintain {
-  box-shadow: 0 14rpx 26rpx rgba(255, 122, 89, 0.12);
-}
+  &-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8rpx;
+  }
 
-.choice-icon {
-  width: 62rpx;
-  height: 62rpx;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  &-title {
+    font-size: 28rpx;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  &-desc {
+    font-size: 22rpx;
+    color: var(--ink-muted);
+    line-height: 1.4;
+  }
 }
 
 .fuel-icon {
@@ -153,26 +178,6 @@ const handleCancel = () => {
 
 .maintain-icon {
   background: rgba(255, 122, 89, 0.16);
-}
-
-.choice-main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8rpx;
-}
-
-.choice-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.choice-desc {
-  font-size: 22rpx;
-  color: var(--ink-muted);
-  line-height: 1.4;
 }
 
 .cancel-wrap {

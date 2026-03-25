@@ -65,10 +65,10 @@ const heroPills = computed(() => [
 .actions-col {
   flex: 1;
   min-width: 0;
-}
 
-.actions-col app-button {
-  display: block;
-  width: 100%;
+  app-button {
+    display: block;
+    width: 100%;
+  }
 }
 </style>

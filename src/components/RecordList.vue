@@ -162,121 +162,121 @@ const formatSignedWithUnit = (value: number, unit: string, digits = 2) => {
   display: flex;
   flex-direction: column;
   gap: 18rpx;
-}
 
-.record {
-  padding: 18rpx 20rpx;
-  border-radius: 20rpx;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1rpx solid rgba(16, 60, 66, 0.1);
-  box-shadow: 0 12rpx 26rpx rgba(10, 82, 78, 0.08);
-}
+  .record {
+    padding: 18rpx 20rpx;
+    border-radius: 20rpx;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1rpx solid rgba(16, 60, 66, 0.1);
+    box-shadow: 0 12rpx 26rpx rgba(10, 82, 78, 0.08);
 
-.record-head {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 12rpx;
-}
+    &-head {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12rpx;
+    }
 
-.record-consumption {
-  min-width: 0;
-  display: flex;
-  justify-content: center;
-}
+    &-consumption {
+      min-width: 0;
+      display: flex;
+      justify-content: center;
 
-.record-consumption-value {
-  max-width: 100%;
-  font-size: 24rpx;
-  font-weight: 600;
-  color: var(--ink-soft);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+      &-value {
+        max-width: 100%;
+        font-size: 24rpx;
+        font-weight: 600;
+        color: var(--ink-soft);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
 
-.record-date {
-  display: flex;
-  align-items: center;
-  gap: 10rpx;
-}
+    &-date {
+      display: flex;
+      align-items: center;
+      gap: 10rpx;
+    }
 
-.record-mark {
-  width: 6rpx;
-  height: 26rpx;
-  border-radius: 999rpx;
-  background: #22c55e;
-  box-shadow: 0 6rpx 12rpx rgba(34, 197, 94, 0.2);
-}
+    &-mark {
+      width: 6rpx;
+      height: 26rpx;
+      border-radius: 999rpx;
+      background: #22c55e;
+      box-shadow: 0 6rpx 12rpx rgba(34, 197, 94, 0.2);
+    }
 
-.record-day {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: var(--ink);
-}
+    &-day {
+      font-size: 26rpx;
+      font-weight: 600;
+      color: var(--ink);
+    }
 
-.record-mile {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-  font-size: 26rpx;
-  font-weight: 600;
-  color: var(--ink);
-}
+    &-mile {
+      display: flex;
+      align-items: center;
+      gap: 8rpx;
+      font-size: 26rpx;
+      font-weight: 600;
+      color: var(--ink);
 
-.record-mile-unit {
-  font-size: 22rpx;
-  color: var(--ink-muted);
-  margin-right: 2rpx;
-}
+      &-unit {
+        font-size: 22rpx;
+        color: var(--ink-muted);
+        margin-right: 2rpx;
+      }
+    }
 
-.record-body {
-  margin-top: 14rpx;
-  padding-top: 14rpx;
-  border-top: 1rpx dashed var(--line);
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-}
+    &-body {
+      margin-top: 14rpx;
+      padding-top: 14rpx;
+      border-top: 1rpx dashed var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 12rpx;
+    }
 
-.record-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12rpx;
-}
+    &-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12rpx;
+    }
 
-.metric {
-  display: flex;
-  align-items: center;
-}
+    &-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12rpx;
+    }
 
-.metric-value {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: var(--ink);
-}
+    &-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8rpx;
+      min-height: 28rpx;
+    }
 
-.record-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12rpx;
-}
+    &-edit {
+      width: 44rpx;
+      height: 44rpx;
+      border-radius: 14rpx;
+      background: rgba(34, 197, 94, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 
-.record-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8rpx;
-  min-height: 28rpx;
-}
+  .metric {
+    display: flex;
+    align-items: center;
 
-.record-edit {
-  width: 44rpx;
-  height: 44rpx;
-  border-radius: 14rpx;
-  background: rgba(34, 197, 94, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    &-value {
+      font-size: 26rpx;
+      font-weight: 600;
+      color: var(--ink);
+    }
+  }
 }
 </style>

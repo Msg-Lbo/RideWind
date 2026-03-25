@@ -44,7 +44,7 @@ const tabItems: TabItem[] = [
     activeIcon: "fire-filled",
   },
   {
-    text: "列表",
+    text: "油耗列表",
     pagePath: "/pkg-records/index",
     icon: "list",
     activeIcon: "list",
@@ -75,6 +75,13 @@ const CREATE_PAGE_PATH = "/subpkg-action/create/index";
 const activePath = ref("");
 const isNavigating = ref(false);
 
+const releaseNavigationLock = (immediate = false) => {
+  const delay = immediate ? 0 : 260;
+  setTimeout(() => {
+    isNavigating.value = false;
+  }, delay);
+};
+
 const normalizePath = (path: string) => `/${path.replace(/^\//, "")}`;
 
 const syncActivePath = () => {
@@ -95,8 +102,11 @@ const openCreatePage = () => {
   isNavigating.value = true;
   uni.navigateTo({
     url: CREATE_PAGE_PATH,
-    complete: () => {
-      isNavigating.value = false;
+    success: () => {
+      releaseNavigationLock();
+    },
+    fail: () => {
+      releaseNavigationLock(true);
     },
   });
 };
@@ -129,51 +139,51 @@ onShow(syncActivePath);
   right: 0;
   bottom: 0;
   z-index: 99;
-}
 
-.tabbar {
-  display: flex;
-  align-items: flex-end;
-  padding: 12rpx 12rpx calc(14rpx + env(safe-area-inset-bottom));
-  background: #f3f5f6;
-  border-top: 1rpx solid rgba(16, 60, 66, 0.08);
-  box-shadow: 0 -8rpx 24rpx rgba(10, 26, 34, 0.06);
-}
+  .tabbar {
+    display: flex;
+    align-items: flex-end;
+    padding: 12rpx 12rpx calc(14rpx + env(safe-area-inset-bottom));
+    background: #f3f5f6;
+    border-top: 1rpx solid rgba(16, 60, 66, 0.08);
+    box-shadow: 0 -8rpx 24rpx rgba(10, 26, 34, 0.06);
+  }
 
-.tab-item {
-  flex: 1;
-  min-width: 0;
-  height: 88rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6rpx;
-  color: #6f8086;
-}
+  .tab-item {
+    flex: 1;
+    min-width: 0;
+    height: 88rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6rpx;
+    color: #6f8086;
 
-.tab-item.active {
-  color: #14b8a6;
-}
+    &.active {
+      color: #14b8a6;
+    }
 
-.tab-item.center {
-  transform: translateY(-22rpx);
-}
+    &.center {
+      transform: translateY(-22rpx);
+    }
+  }
 
-.center-btn {
-  width: 88rpx;
-  height: 88rpx;
-  border-radius: 999rpx;
-  background: #12bb63;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 16rpx 28rpx rgba(18, 187, 99, 0.34);
-}
+  .center-btn {
+    width: 88rpx;
+    height: 88rpx;
+    border-radius: 999rpx;
+    background: #12bb63;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 16rpx 28rpx rgba(18, 187, 99, 0.34);
+  }
 
-.tab-text {
-  font-size: 22rpx;
-  line-height: 1.1;
-  white-space: nowrap;
+  .tab-text {
+    font-size: 22rpx;
+    line-height: 1.1;
+    white-space: nowrap;
+  }
 }
 </style>

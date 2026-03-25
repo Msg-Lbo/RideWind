@@ -38,7 +38,7 @@ import { useMotoStore } from "@/composables/useMotoStore";
 const { vehicleDisplayName, displacementDisplay, tankCapacityDisplay } = useMotoStore();
 
 const nickname = computed(() =>
-  vehicleDisplayName.value === "未命名" ? "骑行用户" : `${vehicleDisplayName.value} 车主`
+  vehicleDisplayName.value === "未命名" ? "行悉用户" : `${vehicleDisplayName.value} 车主`
 );
 
 const vehicleMeta = computed(
@@ -85,74 +85,76 @@ const goToAbout = () => {
   display: flex;
   align-items: center;
   gap: 20rpx;
+
+  .avatar {
+    width: 98rpx;
+    height: 98rpx;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(140deg, #9ed7d1 0%, #5ec4b9 100%);
+    box-shadow: 0 10rpx 24rpx rgba(20, 184, 166, 0.24);
+
+    &-text {
+      color: #ffffff;
+      font-size: 40rpx;
+      font-weight: 600;
+    }
+  }
+
+  .profile-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10rpx;
+
+    .nickname {
+      font-size: 30rpx;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .vehicle-meta {
+      font-size: 22rpx;
+      color: var(--ink-soft);
+      line-height: 1.45;
+    }
+  }
 }
 
-.avatar {
-  width: 98rpx;
-  height: 98rpx;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(140deg, #9ed7d1 0%, #5ec4b9 100%);
-  box-shadow: 0 10rpx 24rpx rgba(20, 184, 166, 0.24);
-}
+.menu-card {
+  .menu-item {
+    padding: 22rpx 2rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16rpx;
+    border-bottom: 1rpx solid rgba(16, 60, 66, 0.08);
 
-.avatar-text {
-  color: #ffffff;
-  font-size: 40rpx;
-  font-weight: 600;
-}
+    &:last-child {
+      border-bottom: none;
+    }
+  }
 
-.profile-info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10rpx;
-}
+  .menu-left {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8rpx;
 
-.nickname {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: var(--ink);
-}
+    .menu-title {
+      font-size: 28rpx;
+      font-weight: 600;
+      color: var(--ink);
+    }
 
-.vehicle-meta {
-  font-size: 22rpx;
-  color: var(--ink-soft);
-  line-height: 1.45;
-}
-
-.menu-item {
-  padding: 22rpx 2rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16rpx;
-  border-bottom: 1rpx solid rgba(16, 60, 66, 0.08);
-}
-
-.menu-item:last-child {
-  border-bottom: none;
-}
-
-.menu-left {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8rpx;
-}
-
-.menu-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.menu-desc {
-  font-size: 22rpx;
-  color: var(--ink-muted);
+    .menu-desc {
+      font-size: 22rpx;
+      color: var(--ink-muted);
+    }
+  }
 }
 </style>

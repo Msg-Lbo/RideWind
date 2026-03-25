@@ -1,5 +1,5 @@
 <template>
-  <button class="btn" :class="variantClass" @tap="$emit('tap')">
+  <button class="btn" :class="variantClass" @tap.stop="$emit('tap')">
     <slot />
   </button>
 </template>
@@ -25,23 +25,23 @@ const variantClass = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-  .btn {
-    width: 100%;
-    height: 74rpx;
-    padding: 0 32rpx;
-    font-size: 26rpx;
-    border-radius: 999rpx;
-    line-height: 74rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    border: none;
-    font-weight: 600;
-    letter-spacing: 1rpx;
-    transition: transform 0.15s ease;
+.btn {
+  width: 100%;
+  height: 74rpx;
+  padding: 0 32rpx;
+  font-size: 26rpx;
+  border-radius: 999rpx;
+  line-height: 74rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: none;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  transition: transform 0.15s ease;
 
   &.is-inline {
     width: auto;
@@ -72,9 +72,9 @@ const variantClass = computed(() => {
   &:active {
     transform: translateY(2rpx);
   }
-}
 
-button::after {
-  border: none;
+  &::after {
+    border: none;
+  }
 }
 </style>

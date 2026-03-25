@@ -17,5 +17,9 @@ defineProps<{ text: string }>();
   text-align: center;
   font-size: 24rpx;
   color: var(--ink-muted);
+
+  text {
+    line-height: 1.45;
+  }
 }
 </style>

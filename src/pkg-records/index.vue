@@ -1,7 +1,13 @@
 <template>
-  <app-page title="记录列表" subtitle="回看每次加油的详细数据" :pills="heroPills">
-    <view v-if="records.length" class="year-summary">
-      <picker class="year-picker" mode="selector" :range="yearOptions" :value="activeYearIndex" @change="onYearChange">
+  <app-page
+    title="油耗列表"
+    subtitle="回看每次加油的详细数据"
+    :pills="heroPills"
+    page-bg="linear-gradient(160deg, #e9fcff 0%, #eefdf7 48%, #edf3ff 100%)"
+    nav-scrolled-bg="rgba(233, 252, 255, 0.92)"
+  >
+    <view class="year-summary">
+      <picker v-if="records.length" class="year-picker" mode="selector" :range="yearOptions" :value="activeYearIndex" @change="onYearChange">
         <view class="year-head">
           <view class="year-title">
             <text>{{ activeYear }}年</text>
@@ -10,6 +16,12 @@
           <text class="year-count">{{ yearRecords.length }} 条</text>
         </view>
       </picker>
+      <view v-else class="year-head">
+        <view class="year-title">
+          <text>油耗统计</text>
+        </view>
+        <text class="year-count">暂无记录</text>
+      </view>
       <view class="year-metrics">
         <view class="year-item">
           <text class="year-label">平均花费</text>
@@ -184,67 +196,67 @@ const handleEdit = (record: RecordItem) => {
 .year-summary {
   padding: 18rpx 20rpx;
   border-radius: 22rpx;
-  background: rgba(233, 239, 241, 0.8);
-  border: 1rpx solid rgba(16, 60, 66, 0.08);
-  box-shadow: 0 14rpx 26rpx rgba(16, 29, 34, 0.06);
+  background: rgba(232, 246, 252, 0.86);
+  border: 1rpx solid rgba(109, 163, 191, 0.18);
+  box-shadow: 0 14rpx 26rpx rgba(42, 93, 122, 0.08);
   margin-bottom: 20rpx;
-}
 
-.year-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+  .year-picker {
+    display: block;
+  }
 
-.year-picker {
-  display: block;
-}
+  .year-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-.year-title {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-  font-size: 26rpx;
-  font-weight: 600;
-  color: var(--ink);
-}
+  .year-title {
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+    font-size: 26rpx;
+    font-weight: 600;
+    color: var(--ink);
+  }
 
-.year-count {
-  font-size: 22rpx;
-  color: var(--ink-muted);
-}
+  .year-count {
+    font-size: 22rpx;
+    color: var(--ink-muted);
+  }
 
-.year-metrics {
-  margin-top: 14rpx;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12rpx;
-}
+  .year-metrics {
+    margin-top: 14rpx;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12rpx;
+  }
 
-.year-item {
-  display: flex;
-  flex-direction: column;
-  gap: 6rpx;
-}
+  .year-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6rpx;
 
-.year-label {
-  font-size: 22rpx;
-  color: var(--ink-muted);
-}
+    .year-label {
+      font-size: 22rpx;
+      color: var(--ink-muted);
+    }
 
-.year-value {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: var(--ink);
+    .year-value {
+      font-size: 26rpx;
+      font-weight: 600;
+      color: var(--ink);
+    }
+  }
 }
 
 .records-panel {
   display: flex;
   flex-direction: column;
   gap: 16rpx;
-}
 
-.records-actions {
-  margin-top: 6rpx;
+  .records-actions {
+    margin-top: 6rpx;
+  }
 }
 </style>

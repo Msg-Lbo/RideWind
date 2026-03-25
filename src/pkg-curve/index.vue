@@ -367,26 +367,26 @@ const summaryItems = computed(() => [
   position: relative;
   z-index: 1;
   margin-bottom: 28rpx;
-}
 
-.curve-hero-title {
-  font-family: var(--font-title);
-  font-size: 44rpx;
-  font-weight: 700;
-  letter-spacing: 2rpx;
-}
+  &-title {
+    font-family: var(--font-title);
+    font-size: 44rpx;
+    font-weight: 700;
+    letter-spacing: 2rpx;
+  }
 
-.curve-hero-sub {
-  margin-top: 10rpx;
-  font-size: 24rpx;
-  color: var(--ink-soft);
-}
+  &-sub {
+    margin-top: 10rpx;
+    font-size: 24rpx;
+    color: var(--ink-soft);
+  }
 
-.curve-hero-pills {
-  margin-top: 18rpx;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12rpx;
+  &-pills {
+    margin-top: 18rpx;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12rpx;
+  }
 }
 
 .curve-pill {
@@ -398,15 +398,15 @@ const summaryItems = computed(() => [
   background: rgba(255, 255, 255, 0.75);
   border: 1rpx solid var(--card-border);
   box-shadow: 0 10rpx 30rpx rgba(16, 29, 34, 0.08);
-}
 
-.curve-pill-label {
-  font-size: 22rpx;
-  color: var(--ink-muted);
-}
+  &-label {
+    font-size: 22rpx;
+    color: var(--ink-muted);
+  }
 
-.curve-pill-value {
-  font-size: 24rpx;
-  font-weight: 600;
+  &-value {
+    font-size: 24rpx;
+    font-weight: 600;
+  }
 }
 </style>

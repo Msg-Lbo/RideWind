@@ -4,6 +4,8 @@
     '--nav-content-height': `${navContentHeight}px`,
     '--nav-status-height': `${statusBarHeight}px`,
     '--nav-side-padding': `${navSidePadding}px`,
+    '--page-bg': props.pageBg || undefined,
+    '--nav-scrolled-bg': props.navScrolledBg || undefined,
   }">
     <view class="page-nav" :class="{ 'is-scrolled': isScrolled }">
       <view class="nav-content">
@@ -42,12 +44,23 @@ type Pill = {
 };
 
 const props = withDefaults(
-  defineProps<{ title?: string; subtitle?: string; pills?: Pill[]; showHero?: boolean }>(),
+  defineProps<{
+    title?: string;
+    subtitle?: string;
+    pills?: Pill[];
+    showHero?: boolean;
+    backHome?: boolean;
+    pageBg?: string;
+    navScrolledBg?: string;
+  }>(),
   {
     title: "",
     subtitle: "",
     pills: () => [],
     showHero: true,
+    backHome: false,
+    pageBg: "",
+    navScrolledBg: "",
   }
 );
 const hasHeroContent = computed(() => !!(props.title || props.subtitle || props.pills.length));
@@ -117,6 +130,10 @@ const syncCustomTabbar = () => {
 };
 
 const updateCanGoBack = () => {
+  if (props.backHome) {
+    canGoBack.value = true;
+    return;
+  }
   const pages = getCurrentPages();
   if (pages.length <= 1) {
     canGoBack.value = false;
@@ -128,6 +145,15 @@ const updateCanGoBack = () => {
 };
 
 const goBack = () => {
+  if (props.backHome) {
+    uni.reLaunch({
+      url: "/pkg-curve/index",
+      fail: () => {
+        uni.switchTab({ url: "/pkg-curve/index" });
+      },
+    });
+    return;
+  }
   if (!canGoBack.value) {
     uni.switchTab({ url: "/pkg-curve/index" });
     return;
@@ -163,6 +189,7 @@ onPageScroll((event) => {
   min-height: 100vh;
   padding: calc(var(--nav-height, 0px) + 36rpx) 24rpx calc(152rpx + constant(safe-area-inset-bottom));
   padding: calc(var(--nav-height, 0px) + 36rpx) 24rpx calc(152rpx + env(safe-area-inset-bottom));
+  background: var(--page-bg, transparent);
   position: relative;
   overflow: hidden;
 
@@ -184,7 +211,7 @@ onPageScroll((event) => {
     backdrop-filter: blur(12rpx);
 
     &.is-scrolled {
-      background: rgba(233, 253, 247, 0.92);
+      background: var(--nav-scrolled-bg, rgba(233, 253, 247, 0.92));
       border-bottom-color: var(--line);
       box-shadow: 0 12rpx 24rpx rgba(16, 29, 34, 0.08);
     }

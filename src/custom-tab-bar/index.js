@@ -6,7 +6,7 @@ const TAB_LIST = [
     selectedIconPath: "/static/icons/curve-active.png"
   },
   {
-    text: "列表",
+    text: "油耗列表",
     pagePath: "/pkg-records/index",
     iconPath: "/static/icons/record.png",
     selectedIconPath: "/static/icons/record-active.png"
@@ -35,7 +35,8 @@ const CREATE_PAGE_PATH = "/subpkg-action/create/index";
 Component({
   data: {
     selected: 0,
-    list: TAB_LIST
+    list: TAB_LIST,
+    isNavigating: false
   },
   lifetimes: {
     attached() {
@@ -48,6 +49,22 @@ Component({
     }
   },
   methods: {
+    lockNavigation() {
+      if (this.data.isNavigating) {
+        return false;
+      }
+      this.setData({ isNavigating: true });
+      return true;
+    },
+    releaseNavigationLock(immediate) {
+      const delay = immediate ? 0 : 260;
+      setTimeout(() => {
+        if (!this.data.isNavigating) {
+          return;
+        }
+        this.setData({ isNavigating: false });
+      }, delay);
+    },
     updateSelectedByPath(path) {
       const route = `/${String(path || "").replace(/^\//, "")}`;
       const currentIndex = this.data.list.findIndex((item) => item.pagePath === route);
@@ -72,19 +89,35 @@ Component({
         return;
       }
       if (center) {
+        if (!this.lockNavigation()) {
+          return;
+        }
         wx.navigateTo({
-          url: CREATE_PAGE_PATH
+          url: CREATE_PAGE_PATH,
+          success: () => {
+            this.releaseNavigationLock();
+          },
+          fail: () => {
+            this.releaseNavigationLock(true);
+          }
         });
         return;
       }
       if (index === this.data.selected) {
         return;
       }
+      if (!this.lockNavigation()) {
+        return;
+      }
       this.setData({ selected: index });
       wx.switchTab({
         url: path,
+        success: () => {
+          this.releaseNavigationLock();
+        },
         fail: () => {
           this.updateSelected();
+          this.releaseNavigationLock(true);
         }
       });
     }

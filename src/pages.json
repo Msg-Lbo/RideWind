@@ -11,7 +11,7 @@
     {
       "path": "pkg-records/index",
       "style": {
-        "navigationBarTitleText": "列表",
+        "navigationBarTitleText": "油耗列表",
         "navigationBarBackgroundColor": "#E9FDF7",
         "navigationBarTextStyle": "black"
       }
@@ -103,7 +103,7 @@
       },
       {
         "pagePath": "pkg-records/index",
-        "text": "列表"
+        "text": "油耗列表"
       },
       {
         "pagePath": "pkg-refuel/index",
@@ -125,6 +125,6 @@
     "navigationStyle": "custom",
     "navigationBarBackgroundColor": "#E9FDF7",
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "油耗记录"
+    "navigationBarTitleText": "行悉录"
   }
 }
